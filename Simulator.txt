@@ -1,0 +1,64 @@
+
+
+            EXT UPAUS       ; lable comes from an external source
+START       RDA             ; READ ASCII from keyboardbuffer
+            SUB ASCIIOF     ; Subtract the ASCII number offset
+            CMP ZERO        ; 
+            JEQ FAKNULL     ; 0!=1
+            JLT ERROR       ; Value is negative -> BUFFER is empty or value is invalid!
+            CMP FOUR        ; Value is larger than allowed?
+            JGT ERROR       ;
+            STA RESULT      ; Store Numbers for usage in loops
+            STA NUMGIV      ;
+            STA NUMBER      ; for loop to increment (NUMBER=NUMBERGIV;N>1;N--){
+INC         LDA NUMBER      ;
+            SUB ONE         ; NUMBER decrement
+            CMP ONE         ; Check condition
+            JLE ENDINC      ;  
+            STA NUMBER      ;
+
+            LDA RESULT      ; Save oldresult for multiplikation by addition (LOOP)
+            STA OLDRES      ;
+
+            LDA NUMBER      ; for loop to multiply (COUNTER=NUMBER;C>1;C--){
+            STA COUNTER     ; loop initializing
+LOOP        LDA COUNTER     ;
+            CMP ONE         ; test condition
+            JLE ENDLOOP     ;
+            SUB ONE         ; COUNTER decrement
+            STA COUNTER     ;
+            
+            LDA RESULT      ; Multiply by successive addition
+            ADD OLDRES      ;
+            STA RESULT      ;
+            
+            JMP LOOP        ;
+ENDLOOP     JMP INC         ;end of for loop to multiply}
+            
+ENDINC      JMP DONE        ;end of for loop to increment}
+            
+            
+FAKNULL     LDA ONE         ;
+            STA RESULT      ;
+            JMP DONE        ;
+            
+ERROR       LDA ASCIIF      ;
+            WRA             ;
+            JMP START       ;
+                  
+DONE        LDA RESULT      ;
+            JSB UPAUS       ;
+EXIT        HLT             ;     
+ASCIIF      HEX 46          ;      
+ASCIIOF     HEX 30          ;            
+OLDRES      RST 1           ;            
+RESULT      RST 1           ;
+COUNTER     RST 1           ;
+NUMGIV      RST 1           ;
+NUMBER      RST 1           ;
+ZERO        HEX 0           ;
+ONE         HEX 1           ;
+FOUR        HEX 4           ;
+
+
+
